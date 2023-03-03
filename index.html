@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>License Plate Detector</title>
+  </head>
+  <body>
+    <h1>Detected License Plates</h1>
+    <ul>
+      {% for row in rows %}
+      <li>{{ row[1] }} - Fine Amount: {{ row[2] }}</li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
