@@ -5,6 +5,7 @@ import time
 from PIL import Image, ImageOps
 import numpy as np
 from utils import letterbox_image, scale_coords
+import os
 
 
 def sortFunc(data):
@@ -68,7 +69,7 @@ def sortFunc(data):
 def detect_image(weights, labels, image_url, img_size, conf_thres, iou_thres):
     result = []
     start_time = time.time()
-
+    BASE_PATH = os.getcwd()
     # image = cv2.imread(image_url)
     image = Image.open(image_url)
     original_size = image.size[:2]
@@ -111,8 +112,8 @@ def detect_image(weights, labels, image_url, img_size, conf_thres, iou_thres):
                 print("detect_image2")
 
                 org = (int(r[0]), int(r[1]))
-                # labelImg = img[int(r[1]):int(r[3]), int(r[0])
-                #                    : int(r[2]), :].copy()
+                labelImg = img[int(r[1]):int(r[3]), int(r[0])
+                                   : int(r[2]), :].copy()
 
                 cv2.rectangle(img, (int(r[0]), int(r[1])),
                               (int(r[2]), int(r[3])), (255, 0, 0), 3)
@@ -130,7 +131,10 @@ def detect_image(weights, labels, image_url, img_size, conf_thres, iou_thres):
 
                 # cv2.imshow("frame2", labelImg[:, :, ::-1])
                 print("detect character")
-                cv2.imshow("frame", img[:, :, ::-1])
+                cv2.imwrite("output/cropped/"+"1.jpg",
+                            labelImg[:, :, ::-1])
+
+                # cv2.imshow("frame", img[:, :, ::-1])
 
                 # print("in flag", flag)
         # break
@@ -150,15 +154,17 @@ def detect_image(weights, labels, image_url, img_size, conf_thres, iou_thres):
         # print(result)
 
         value = sortFunc(result)
-        if flag == 1 or cv2.waitKey(0) == 27:
-            cv2.destroyAllWindows()
-        return value
+        # if flag == 1 or cv2.waitKey(0) == 27:
+        #     cv2.destroyAllWindows()
+        if(labels == BASE_PATH+"/labels/number.txt"):
+
+            return value
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-w', '--weights', type=str,
-                        default='custom_plate.tflite', help='model.tflite path(s)')
+                        default='character.tflite', help='model.tflite path(s)')
     parser.add_argument('-i', '--img_path', type=str,
                         required=True, help='image path')
     parser.add_argument('--img_size', type=int, default=416, help='image size')
@@ -166,8 +172,6 @@ if __name__ == '__main__':
                         default=0.25, help='object confidence threshold')
     parser.add_argument('--iou_thres', type=float,
                         default=0.45, help='IOU threshold for NMS')
-    parser.add_argument('--labels', type=str,
-                        default="./labels/plate.txt", help='label path')
 
     opt = parser.parse_args()
 
